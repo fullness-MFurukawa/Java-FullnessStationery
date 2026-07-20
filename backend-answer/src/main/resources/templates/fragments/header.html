@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<nav th:fragment="header" class="navbar navbar-expand-lg border-bottom" style="background-color:#e8f5e9;">
+    <div class="container-fluid">
+        <span class="navbar-brand mb-0 h1 text-success fw-bold">フルネス文具 管理画面</span>
+        <div class="d-flex align-items-center gap-3">
+            <!-- ログイン時のみ表示する機能リンク -->
+            <ul class="navbar-nav flex-row gap-3 mb-0" sec:authorize="isAuthenticated()">
+                <li class="nav-item"><a class="nav-link" th:href="@{/admin/product}">商品情報メンテナンス</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/admin/category/add}">商品カテゴリ登録</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/admin/order/search}">購入履歴検索</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/admin/account/form}">アカウント登録</a></li>
+            </ul>
+            <!-- ログアウト(認証時) -->
+            <form th:action="@{/admin/logout}" method="post" class="d-inline" sec:authorize="isAuthenticated()">
+                <button type="submit" class="btn btn-outline-success btn-sm">ログアウト</button>
+            </form>
+            <!-- ログイン(未認証時) -->
+            <a th:href="@{/admin/login}" class="btn btn-outline-success btn-sm"
+               sec:authorize="isAnonymous()">ログイン</a>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

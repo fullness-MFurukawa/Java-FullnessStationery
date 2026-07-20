@@ -1,0 +1,65 @@
+plugins {
+	id 'java'
+	id 'org.springframework.boot' version '4.0.7'
+	id 'io.spring.dependency-management' version '1.1.7'
+}
+
+group = 'jp.co.fullness.ec'
+version = '0.0.1-SNAPSHOT'
+
+// ---------------------------------------------------------------------
+// Java Toolchain
+//   既定は JDK 17。JDK 21 / 25 でビルドしたい場合は次のいずれか:
+//     ./gradlew build -PjavaVersion=21
+//     ./gradlew build -PjavaVersion=25
+//   もしくは gradle.properties に javaVersion=21 を記載。
+// ---------------------------------------------------------------------
+def javaLanguageVersion = (project.findProperty('javaVersion') ?: '17') as int
+
+java {
+	toolchain {
+		languageVersion = JavaLanguageVersion.of(javaLanguageVersion)
+	}
+}
+
+repositories {
+	mavenCentral()
+}
+
+// MyBatis スターターのバージョン(Spring Boot 4.0 系対応の 4.0 ライン)
+ext {
+	mybatisStarterVersion = '4.0.1'
+}
+
+dependencies {
+	implementation 'org.springframework.boot:spring-boot-starter-security'
+	implementation 'org.springframework.boot:spring-boot-starter-thymeleaf'
+	implementation 'org.springframework.boot:spring-boot-starter-webmvc'
+	implementation 'org.springframework.boot:spring-boot-starter-validation'
+	implementation 'org.thymeleaf.extras:thymeleaf-extras-springsecurity6'
+
+	// MyBatis 3 (Spring Boot 4.0 対応スターター)
+	implementation "org.mybatis.spring.boot:mybatis-spring-boot-starter:${mybatisStarterVersion}"
+
+	// DB マイグレーション (Flyway)
+	implementation 'org.flywaydb:flyway-core'
+	implementation 'org.flywaydb:flyway-database-postgresql'
+
+	compileOnly 'org.projectlombok:lombok'
+	developmentOnly 'org.springframework.boot:spring-boot-devtools'
+	runtimeOnly 'org.postgresql:postgresql'
+	annotationProcessor 'org.projectlombok:lombok'
+
+	testImplementation 'org.springframework.boot:spring-boot-starter-security-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-thymeleaf-test'
+	testImplementation 'org.springframework.boot:spring-boot-starter-webmvc-test'
+	// MyBatis のテスト補助(任意): @MybatisTest などを利用する場合
+	testImplementation "org.mybatis.spring.boot:mybatis-spring-boot-starter-test:${mybatisStarterVersion}"
+	testCompileOnly 'org.projectlombok:lombok'
+	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
+	testAnnotationProcessor 'org.projectlombok:lombok'
+}
+
+tasks.named('test') {
+	useJUnitPlatform()
+}

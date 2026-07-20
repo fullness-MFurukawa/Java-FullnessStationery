@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.fullness.ec.backend.infrastructure.mapper.EmployeeAccountMapper">
+
+    <!-- アカウント名で社員アカウントを1件取得 -->
+    <select id="selectByName" resultType="EmployeeAccountEntity">
+        SELECT
+            id,
+            name,
+            password,
+            employee_id
+        FROM
+            employee_account
+        WHERE
+            name = #{name}
+    </select>
+
+    <!-- アカウント名の存在チェック(重複チェック用) -->
+    <select id="existsByName" resultType="boolean">
+        SELECT EXISTS(
+            SELECT 1 FROM employee_account WHERE name = #{name}
+        )
+    </select>
+
+    <!-- 社員アカウントの新規登録 -->
+    <insert id="insert" parameterType="EmployeeAccountEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO employee_account (
+            name,
+            password,
+            employee_id
+        ) VALUES (
+            #{name},
+            #{password},
+            #{employeeId}
+        )
+    </insert>
+
+</mapper>

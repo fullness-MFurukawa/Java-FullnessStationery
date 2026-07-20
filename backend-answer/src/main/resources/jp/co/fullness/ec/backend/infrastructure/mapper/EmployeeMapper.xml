@@ -1,0 +1,21 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.fullness.ec.backend.infrastructure.mapper.EmployeeMapper">
+
+    <!-- IDで社員を1件取得 -->
+    <select id="selectById" resultType="EmployeeEntity">
+        SELECT id, name, kana, department_id
+        FROM employee
+        WHERE id = #{id}
+    </select>
+
+    <!-- アカウント未作成の社員を取得(担当者アカウント登録の選択肢用) -->
+    <select id="selectWithoutAccount" resultType="EmployeeEntity">
+        SELECT id, name, kana, department_id
+        FROM employee
+        WHERE id NOT IN (SELECT employee_id FROM employee_account)
+        ORDER BY id
+    </select>
+
+</mapper>
