@@ -13,7 +13,11 @@
         <h2 class="mb-4">メニュー</h2>
         <p class="fs-5" th:text="|ようこそ、${displayName} さん|">ようこそ、○○ さん</p>
     </main>
-
+    <!-- 中央に静的画像を表示 -->
+    <div class="text-center my-4">
+        <img th:src="@{/images/Shop_Img1.jpeg}" alt="メニュー画像"
+             class="img-fluid" style="max-width: 480px; height: auto;">
+    </div>
     <div th:replace="~{fragments/footer :: footer}"></div>
 </body>
 </html>

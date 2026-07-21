@@ -1,0 +1,66 @@
+name: Backend CI
+
+on:
+  push:
+    branches: [ main ]          
+    paths:
+      - 'backend-answer/**'
+      - '.github/workflows/backend-ci.yml'
+  pull_request:
+    paths:
+      - 'backend-answer/**'
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+    services:
+      postgres:
+        image: postgres:17
+        env:
+          POSTGRES_DB: fullness-ecx
+          POSTGRES_USER: postgres      
+          POSTGRES_PASSWORD: training  
+        ports:
+          - 5432:5432
+        options: >-
+          --health-cmd "pg_isready -U postgres -d fullness-ecx"
+          --health-interval 10s
+          --health-timeout 5s
+          --health-retries 5
+
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v4
+
+      - name: JDK 17 のセットアップ
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+
+      - name: データベース初期化(スキーマ＋シード)
+        env:
+          PGPASSWORD: training
+        run: |
+          psql -h localhost -U postgres -d fullness-ecx -f backend-answer/src/main/resources/sql/create_tables.sql
+          psql -h localhost -U postgres -d fullness-ecx -f backend-answer/src/main/resources/sql/insert_data.sql
+
+      - name: gradlew に実行権限を付与
+        working-directory: backend-answer
+        run: chmod +x ./gradlew
+
+      - name: ビルド＆テスト
+        working-directory: backend-answer
+        env:
+          DB_URL: jdbc:postgresql://localhost:5432/fullness-ecx
+          DB_USERNAME: postgres
+          DB_PASSWORD: training
+        run: ./gradlew build
+
+      - name: テストレポートのアップロード
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: test-report
+          path: backend-answer/build/reports/tests/test
