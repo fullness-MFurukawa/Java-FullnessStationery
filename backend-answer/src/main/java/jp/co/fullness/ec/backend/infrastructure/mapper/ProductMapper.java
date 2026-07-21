@@ -23,4 +23,13 @@ public interface ProductMapper {
 
     /** 商品を新規登録する。生成IDは entity.id に設定される。 */
     void insert(ProductEntity entity);
+
+    /** IDで商品を1件取得する。 */
+    ProductEntity selectById(@Param("id") Integer id);
+
+    /** 商品を更新する(delete_flg は変更しない)。 */
+    void update(ProductEntity entity);
+
+    /** 論理削除:指定商品の delete_flg を 1 に更新する。 */
+    void logicalDelete(Integer id);
 }

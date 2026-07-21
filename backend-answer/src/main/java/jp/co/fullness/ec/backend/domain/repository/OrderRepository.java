@@ -17,22 +17,20 @@ public interface OrderRepository {
      * 購入日・顧客アカウント名で絞り込み(いずれも null 可＝条件なし)、
      * 注文ID降順(新しい順)・ページングで取得する。
      *
-     * @param orderDate        購入日。null の場合は日付で絞り込まない
-     * @param customerUsername 顧客アカウント名。null の場合は顧客で絞り込まない
+     * @param condition        購入履歴検索(BP015)の検索条件        
      * @param limit            取得件数(1ページの件数)
      * @param offset           取得開始位置
      * @return 注文一覧(注文明細・顧客・ステータス・支払い方法を含む)
      */
-    List<Order> search(LocalDate orderDate, String customerUsername, int limit, int offset);
+    List<Order> search(OrderSearchCondition condition, int limit, int offset);
 
     /**
      * 検索条件に一致する注文件数を取得する(ページング用)。
      *
-     * @param orderDate        購入日。null の場合は日付で絞り込まない
-     * @param customerUsername 顧客アカウント名。null の場合は顧客で絞り込まない
+     * @param condition        購入履歴検索(BP015)の検索条件  
      * @return 件数
      */
-    long count(LocalDate orderDate, String customerUsername);
+    long count(OrderSearchCondition condition);
 
     /**
      * IDで注文を取得する(注文明細・顧客・ステータス・支払い方法を含む)。
@@ -50,4 +48,7 @@ public interface OrderRepository {
      * @param orderStatusId 新しい注文ステータスID
      */
     void updateStatus(Integer orderId, Integer orderStatusId);
+
+    /** 購入日プルダウン用: 注文が存在する日付(日単位)を新しい順で取得する。 */
+    List<LocalDate> findDistinctOrderDates();
 }

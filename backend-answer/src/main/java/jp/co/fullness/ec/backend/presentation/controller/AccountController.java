@@ -102,6 +102,7 @@ public class AccountController {
     }
 
     /** 社員IDから社員名を解決する(アカウント未作成一覧から)。 */
+    @SuppressWarnings("null")
     private String resolveEmployeeName(Integer employeeId) {
         return accountRegisterService.findRegisterableEmployees().stream()
                 .filter(e -> e.getId().equals(employeeId))

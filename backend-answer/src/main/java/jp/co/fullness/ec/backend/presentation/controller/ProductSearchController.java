@@ -21,9 +21,9 @@ import lombok.RequiredArgsConstructor;
 @Controller
 @RequestMapping("/admin/product")
 @RequiredArgsConstructor
-public class ProductController {
+public class ProductSearchController {
 
-    private static final int PAGE_SIZE = 10;
+    private static final int PAGE_SIZE = 5;
 
     private final ProductSearchService productSearchService;
 

@@ -58,10 +58,13 @@ dependencies {
 	testCompileOnly 'org.projectlombok:lombok'
 	testRuntimeOnly 'org.junit.platform:junit-platform-launcher'
 	testAnnotationProcessor 'org.projectlombok:lombok'
+	// Mockito(モック) + JUnit5 連携(@ExtendWith(MockitoExtension.class) 用)
+	testImplementation 'org.mockito:mockito-junit-jupiter'
 
 	// AWS SDK v2 (S3)
 	implementation platform('software.amazon.awssdk:bom:2.46.6')
 	implementation 'software.amazon.awssdk:s3'
+
 }
 
 tasks.named('test') {

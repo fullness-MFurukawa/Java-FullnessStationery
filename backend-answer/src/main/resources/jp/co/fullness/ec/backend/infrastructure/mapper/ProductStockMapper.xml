@@ -9,4 +9,16 @@
         VALUES (#{quantity}, #{productId})
     </insert>
 
+    <select id="selectByProductId" resultType="ProductStockEntity">
+        SELECT id, quantity, product_id
+        FROM product_stock
+        WHERE product_id = #{productId}
+    </select>
+
+    <update id="updateByProductId" parameterType="ProductStockEntity">
+        UPDATE product_stock
+        SET quantity = #{quantity}
+        WHERE product_id = #{productId}
+    </update>
+
 </mapper>

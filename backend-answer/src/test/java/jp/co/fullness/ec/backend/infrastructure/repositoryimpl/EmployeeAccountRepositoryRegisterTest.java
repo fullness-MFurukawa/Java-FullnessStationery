@@ -4,9 +4,12 @@ import static org.assertj.core.api.Assertions.assertThat;
 
 import java.util.Optional;
 
+import javax.sql.DataSource;
+
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.context.SpringBootTest;
+import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.transaction.annotation.Transactional;
 
 import jp.co.fullness.ec.backend.domain.model.Employee;
@@ -24,6 +27,9 @@ class EmployeeAccountRepositoryRegisterTest {
     @Autowired
     private EmployeeAccountRepository employeeAccountRepository;
 
+    @Autowired
+    private DataSource dataSource;   
+
     @Test
     void 既存アカウント名は存在すると判定される() {
         assertThat(employeeAccountRepository.existsByName("fullness")).isTrue();
@@ -36,16 +42,25 @@ class EmployeeAccountRepositoryRegisterTest {
 
     @Test
     void 社員アカウントを新規登録できる() {
-        // アカウント未作成の社員(フルネス花子, id=2)に対して登録する
-        Employee employee = Employee.builder().id(2).build();
+        // アカウント未作成の社員をトランザクション内で新規投入
+        JdbcTemplate jdbc = new JdbcTemplate(dataSource);   // import org.springframework.jdbc.core.JdbcTemplate;
+        Integer employeeId = jdbc.queryForObject(
+                "INSERT INTO employee(name, kana, department_id) " +
+                "VALUES ('テスト花子', 'テストハナコ', 1) RETURNING id",
+                Integer.class);
+
+        // 既存データと衝突しない一意なアカウント名
+        String accountName = "test_hanako_" + employeeId;
+
+        Employee employee = Employee.builder().id(employeeId).build();
         EmployeeAccount account = EmployeeAccount.builder()
-                .name("hanako")
-                .password("$2b$10$dummyhashdummyhashdummyhashdummyhashdummyha") // ハッシュ相当(長さのみ意味を持つ)
+                .name(accountName)
+                .password("$2b$10$dummyhashdummyhashdummyhashdummyhashdummyha")
                 .employee(employee)
                 .build();
 
         // 登録前は存在しない
-        assertThat(employeeAccountRepository.existsByName("hanako")).isFalse();
+        assertThat(employeeAccountRepository.existsByName(accountName)).isFalse();
 
         // 登録
         employeeAccountRepository.register(account);
@@ -54,13 +69,13 @@ class EmployeeAccountRepositoryRegisterTest {
         assertThat(account.getId()).isNotNull();
 
         // 登録後は存在する
-        assertThat(employeeAccountRepository.existsByName("hanako")).isTrue();
+        assertThat(employeeAccountRepository.existsByName(accountName)).isTrue();
 
-        // findByName で復元でき、社員(フルネス花子)が紐づく
-        Optional<EmployeeAccount> found = employeeAccountRepository.findByName("hanako");
+        // findByName で復元でき、社員が紐づく
+        Optional<EmployeeAccount> found = employeeAccountRepository.findByName(accountName);
         assertThat(found).isPresent();
         assertThat(found.get().getEmployee()).isNotNull();
-        assertThat(found.get().getEmployee().getId()).isEqualTo(2);
-        assertThat(found.get().getEmployee().getName()).isEqualTo("フルネス花子");
+        assertThat(found.get().getEmployee().getId()).isEqualTo(employeeId);
+        assertThat(found.get().getEmployee().getName()).isEqualTo("テスト花子");
     }
 }

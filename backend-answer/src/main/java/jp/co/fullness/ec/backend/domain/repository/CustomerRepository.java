@@ -18,6 +18,7 @@ public interface CustomerRepository {
      */
     List<Customer> findAll();
 
+   
     /**
      * IDで顧客を取得する。
      *

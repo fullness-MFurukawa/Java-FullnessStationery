@@ -31,4 +31,26 @@
         VALUES (#{name}, #{price}, #{imageUrl}, #{productCategoryId}, #{deleteFlg})
     </insert>
 
+    <select id="selectById" resultType="ProductEntity">
+        SELECT id, name, price, image_url, product_category_id, delete_flg
+        FROM product
+        WHERE id = #{id}
+    </select>
+
+    <update id="update" parameterType="ProductEntity">
+        UPDATE product
+        SET name = #{name},
+            price = #{price},
+            image_url = #{imageUrl},
+            product_category_id = #{productCategoryId}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 論理削除: 物理削除せず delete_flg を 1 に更新 -->
+    <update id="logicalDelete" parameterType="int">
+        UPDATE product
+           SET delete_flg = 1
+         WHERE id = #{id}
+    </update>
+    
 </mapper>
