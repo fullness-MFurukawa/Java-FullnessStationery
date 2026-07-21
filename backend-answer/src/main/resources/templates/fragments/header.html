@@ -9,7 +9,7 @@
             <!-- ログイン時のみ表示する機能リンク -->
             <ul class="navbar-nav flex-row gap-3 mb-0" sec:authorize="isAuthenticated()">
                 <li class="nav-item"><a class="nav-link" th:href="@{/admin/product}">商品情報メンテナンス</a></li>
-                <li class="nav-item"><a class="nav-link" th:href="@{/admin/category/add}">商品カテゴリ登録</a></li>
+                <li class="nav-item"><a class="nav-link" th:href="@{/admin/category/form}">商品カテゴリ登録</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/admin/order/search}">購入履歴検索</a></li>
                 <li class="nav-item"><a class="nav-link" th:href="@{/admin/account/form}">アカウント登録</a></li>
             </ul>

@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>商品検索</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100">
+    <div th:replace="~{fragments/header :: header}"></div>
+
+    <main class="container flex-grow-1 py-5">
+        <h2 class="text-center mb-4">商品検索</h2>
+
+        <!-- 絞り込み + 商品追加 -->
+        <div class="d-flex justify-content-center align-items-center gap-2 mb-4">
+            <form th:action="@{/admin/product}" th:object="${productSearchForm}" method="get"
+                  class="d-flex align-items-center gap-2">
+                <select th:field="*{categoryId}" class="form-select" style="width:auto;">
+                    <option value="">すべてのカテゴリ</option>
+                    <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+                </select>
+                <button type="submit" class="btn btn-success">カテゴリ検索</button>
+            </form>
+            <a th:href="@{/admin/product/add}" class="btn btn-outline-success">商品追加</a>
+        </div>
+
+        <!-- 商品一覧 -->
+        <div th:if="${!products.isEmpty()}">
+            <table class="table table-bordered align-middle text-center">
+                <thead class="table-light">
+                    <tr>
+                        <th>商品画像</th>
+                        <th>商品名</th>
+                        <th>単価</th>
+                        <th>修正</th>
+                        <th>削除</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    <tr th:each="product : ${products}">
+                        <td><img th:src="${imageUrls.get(product.id)}" width="100" alt="商品画像"></td>
+                        <td th:text="${product.name}">商品名</td>
+                        <td th:text="|${#numbers.formatInteger(product.price, 1, 'COMMA')}円|">0円</td>
+                        <td>
+                            <a th:href="@{/admin/product/edit/{id}(id=${product.id})}"
+                               class="btn btn-sm btn-outline-primary">修正</a>
+                        </td>
+                        <td>
+                            <a th:href="@{/admin/product/delete/{id}(id=${product.id})}"
+                               class="btn btn-sm btn-outline-danger">削除</a>
+                        </td>
+                    </tr>
+                </tbody>
+            </table>
+
+            <!-- ページネーション -->
+            <nav th:if="${totalPages > 1}">
+                <ul class="pagination justify-content-center">
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/product(categoryId=${productSearchForm.categoryId}, page=1)}">最初</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == 1} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/product(categoryId=${productSearchForm.categoryId}, page=${currentPage - 1})}">前へ</a>
+                    </li>
+                    <li class="page-item" th:each="i : ${#numbers.sequence(1, totalPages)}"
+                        th:classappend="${i == currentPage} ? 'active'">
+                        <a class="page-link"
+                           th:href="@{/admin/product(categoryId=${productSearchForm.categoryId}, page=${i})}"
+                           th:text="${i}">1</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/product(categoryId=${productSearchForm.categoryId}, page=${currentPage + 1})}">次へ</a>
+                    </li>
+                    <li class="page-item" th:classappend="${currentPage == totalPages} ? 'disabled'">
+                        <a class="page-link"
+                           th:href="@{/admin/product(categoryId=${productSearchForm.categoryId}, page=${totalPages})}">最後</a>
+                    </li>
+                </ul>
+            </nav>
+        </div>
+
+        <!-- 0件時 -->
+        <p th:if="${products.isEmpty()}" class="text-center text-muted">該当する商品情報がありません</p>
+    </main>
+
+    <div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>
