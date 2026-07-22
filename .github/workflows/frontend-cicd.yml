@@ -42,7 +42,7 @@ jobs:
       # スキーマ + シード投入(name_kana 対応版)
       - name: Initialize database (schema + seed)
         env:
-          PGPASSWORD: fullness
+          PGPASSWORD: training
         run: |
           psql -h localhost -U postgres -d fullness-ecx -f ec-answer/src/main/resources/sql/create_tables.sql
           psql -h localhost -U postgres -d fullness-ecx -f ec-answer/src/main/resources/sql/insert_data.sql
