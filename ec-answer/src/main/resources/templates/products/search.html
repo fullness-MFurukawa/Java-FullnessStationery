@@ -1,0 +1,49 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>カテゴリ別商品検索</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100">
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container flex-grow-1 py-4">
+    <h2 class="text-center mb-4">カテゴリ別商品検索画面</h2>
+
+    <!-- カテゴリ絞り込み -->
+    <form th:action="@{/products/search}" th:object="${productSearchForm}" method="get"
+          class="d-flex justify-content-end align-items-center gap-2 mb-4">
+        <select th:field="*{categoryId}" class="form-select" style="width:auto;">
+            <option value="">全商品</option>
+            <option th:each="cat : ${categories}" th:value="${cat.id}" th:text="${cat.name}"></option>
+        </select>
+        <button type="submit" class="btn btn-primary">検索</button>
+    </form>
+
+    <!-- 商品グリッド(1行4列) -->
+    <div th:if="${products != null and !products.isEmpty()}" class="row row-cols-2 row-cols-md-4 g-3">
+        <div class="col" th:each="product : ${products}">
+            <div class="card h-100">
+                <img th:src="${imageUrls.get(product.id)}" class="card-img-top p-3"
+                     alt="商品画像" style="height:180px; object-fit:contain;">
+                <div class="card-body text-center">
+                    <div th:text="${product.name}">商品名</div>
+                    <div class="fw-bold text-danger"
+                         th:text="|${#numbers.formatInteger(product.price,1,'COMMA')}円|">0円</div>
+                    <a th:href="@{/products/detail/{id}(id=${product.id})}"
+                       class="btn btn-outline-primary btn-sm mt-2">詳細</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- 0件 -->
+    <p th:if="${products == null or products.isEmpty()}"
+       class="text-center text-muted" th:text="${message}">該当する商品が見つかりませんでした</p>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

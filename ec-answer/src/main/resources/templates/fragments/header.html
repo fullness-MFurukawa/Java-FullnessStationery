@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<nav th:fragment="header" class="navbar navbar-expand-lg border-bottom" style="background-color:#e8f5e9;">
+    <div class="container-fluid">
+        <a class="navbar-brand mb-0 h1 text-success fw-bold" th:href="@{/}">🖊 フルネス文具</a>
+
+        <ul class="navbar-nav flex-row gap-3 mb-0">
+            <li class="nav-item"><a class="nav-link" th:href="@{/products/search}">商品検索</a></li>
+        </ul>
+
+        <div class="d-flex align-items-center gap-3">
+            <!-- カート(買い物カゴ) -->
+            <a class="nav-link" th:href="@{/purchase/input}">
+                🛒 買い物カゴ
+                <span th:if="${cart != null and cart.totalCount > 0}"
+                      class="badge bg-success" th:text="${cart.totalCount}">0</span>
+            </a>
+
+            <!-- 未ログイン時 -->
+            <a th:href="@{/account/form}" sec:authorize="isAnonymous()" class="nav-link">アカウント登録</a>
+            <a th:href="@{/login}"        sec:authorize="isAnonymous()" class="nav-link">ログイン</a>
+
+            <!-- ログイン時 -->
+            <a th:href="@{/purchase/history}" sec:authorize="isAuthenticated()" class="nav-link">購入履歴</a>
+            <form th:action="@{/logout}" method="post" class="d-inline" sec:authorize="isAuthenticated()">
+                <button type="submit" class="btn btn-link nav-link p-0">
+                    ログアウト（<span th:text="${displayName}">ユーザー</span>さん）
+                </button>
+            </form>
+        </div>
+    </div>
+</nav>
+</body>
+</html>

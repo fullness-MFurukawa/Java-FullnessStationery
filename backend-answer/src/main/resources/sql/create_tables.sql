@@ -123,6 +123,7 @@ COMMENT ON TABLE payment_method IS '支払い方法';
 CREATE TABLE customer (
     id           SERIAL       PRIMARY KEY,
     name         VARCHAR(20)  NOT NULL,
+    name_kana    VARCHAR(40)  NOT NULL, 
     address1     VARCHAR(100) NOT NULL,
     address2     VARCHAR(100),
     phone_number VARCHAR(20)  NOT NULL,

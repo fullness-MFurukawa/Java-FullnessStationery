@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.fullness.ec.frontend.infrastructure.mapper.OrderMapper">
+
+    <insert id="insertOrder" parameterType="OrderEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO orders
+            (order_date, amount_total, customer_id, order_status_id, payment_method_id)
+        VALUES
+            (#{orderDate}, #{amountTotal}, #{customerId}, #{orderStatusId}, #{paymentMethodId})
+    </insert>
+
+    <insert id="insertOrderDetail" parameterType="OrderDetailEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO orders_detail (order_id, product_id, count)
+        VALUES (#{orderId}, #{productId}, #{count})
+    </insert>
+
+    <select id="selectById" resultType="OrderEntity" parameterType="int">
+        SELECT id, order_date, amount_total, customer_id, order_status_id, payment_method_id
+          FROM orders
+         WHERE id = #{id}
+    </select>
+
+    <select id="selectByCustomerId" resultType="OrderEntity" parameterType="int">
+        SELECT id, order_date, amount_total, customer_id, order_status_id, payment_method_id
+          FROM orders
+         WHERE customer_id = #{customerId}
+         ORDER BY order_date DESC, id DESC
+    </select>
+
+    <select id="selectDetailsByOrderId" resultType="OrderDetailEntity" parameterType="int">
+        SELECT id, order_id, product_id, count
+          FROM orders_detail
+         WHERE order_id = #{orderId}
+         ORDER BY id
+    </select>
+
+</mapper>

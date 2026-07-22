@@ -1,0 +1,46 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<head>
+    <meta charset="UTF-8">
+    <title>商品詳細</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100">
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container flex-grow-1 py-4">
+
+    <!-- 不正な商品ID -->
+    <div th:if="${errorMessage != null}" class="alert alert-danger text-center" th:text="${errorMessage}"></div>
+
+    <div th:if="${product != null}" class="row g-4">
+        <div class="col-md-7 text-center">
+            <h2 class="mb-4" th:text="${product.name}">商品名</h2>
+            <img th:src="${imageUrl}" alt="商品画像" class="img-fluid" style="max-height:360px; object-fit:contain;">
+        </div>
+
+        <div class="col-md-5">
+            <div class="border rounded p-4">
+                <div class="fs-4 fw-bold text-danger mb-3"
+                     th:text="|${#numbers.formatInteger(product.price,1,'COMMA')}円|">0円</div>
+
+                <!-- 在庫あり: 数量選択＋カートに入れる -->
+                <form th:if="${stock > 0}" th:action="@{/cart/add}" method="post">
+                    <input type="hidden" name="productId" th:value="${product.id}">
+                    <label class="form-label">数量</label>
+                    <input type="number" name="quantity" class="form-control mb-3"
+                            value="1" min="1" th:max="${stock}" required>
+                    <button type="submit" class="btn btn-success w-100">カートに入れる</button>
+                </form>
+
+                <!-- 在庫切れ -->
+                <div th:if="${stock == 0}" class="text-danger fw-bold">現在この商品は在庫切れです</div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

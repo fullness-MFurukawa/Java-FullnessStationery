@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:sec="http://www.thymeleaf.org/extras/spring-security">
+<body>
+<footer th:fragment="footer" class="border-top mt-auto py-4" style="background-color:#e8f5e9;">
+    <div class="container">
+        <div class="fw-bold text-success mb-2">フルネス文具</div>
+        <ul class="list-unstyled small mb-2">
+            <li><a class="link-secondary text-decoration-none" th:href="@{/}">» トップ</a></li>
+            <li sec:authorize="isAnonymous()"><a class="link-secondary text-decoration-none" th:href="@{/account/form}">» アカウント登録</a></li>
+            <li sec:authorize="isAnonymous()"><a class="link-secondary text-decoration-none" th:href="@{/login}">» ログイン</a></li>
+            <li><a class="link-secondary text-decoration-none" th:href="@{/products/search}">» 商品検索</a></li>
+            <li><a class="link-secondary text-decoration-none" th:href="@{/purchase/input}">» 買い物カゴ</a></li>
+            <li sec:authorize="isAuthenticated()"><a class="link-secondary text-decoration-none" th:href="@{/orders/history}">» 購入履歴</a></li>
+            <li sec:authorize="isAuthenticated()">
+                <form th:action="@{/logout}" method="post" class="d-inline">
+                    <button type="submit" class="btn btn-link btn-sm link-secondary text-decoration-none p-0">
+                        » ログアウト（<span th:text="${displayName}">ユーザー</span>さん）
+                    </button>
+                </form>
+            </li>
+        </ul>
+        <div class="text-center small text-muted">Fullness Stationery © All rights reserved.</div>
+    </div>
+</footer>
+</body>
+</html>

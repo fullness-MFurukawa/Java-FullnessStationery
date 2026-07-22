@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "https://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="jp.co.fullness.ec.frontend.infrastructure.mapper.CustomerMapper">
+
+    <select id="selectByMailAddress" resultType="CustomerEntity">
+        SELECT id, name, name_kana, address1, address2, phone_number,
+               mail_address, username, password, created_at
+          FROM customer
+         WHERE mail_address = #{mailAddress}
+    </select>
+
+    <select id="selectById" resultType="CustomerEntity" parameterType="int">
+        SELECT id, name, name_kana, address1, address2, phone_number,
+               mail_address, username, password, created_at
+          FROM customer
+         WHERE id = #{id}
+    </select>
+
+    <insert id="insert" parameterType="CustomerEntity"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO customer
+            (name, name_kana, address1, address2,
+             phone_number, mail_address, username, password)
+        VALUES
+            (#{name}, #{nameKana}, #{address1}, #{address2},
+             #{phoneNumber}, #{mailAddress}, #{username}, #{password})
+    </insert>
+
+    <select id="countByMailAddress" resultType="int">
+        SELECT COUNT(*) FROM customer WHERE mail_address = #{mailAddress}
+    </select>
+
+    <select id="countByUsername" resultType="int">
+        SELECT COUNT(*) FROM customer WHERE username = #{username}
+    </select>
+
+</mapper>

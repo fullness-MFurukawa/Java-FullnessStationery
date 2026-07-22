@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <title>購入(確認)</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body class="d-flex flex-column min-vh-100">
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container flex-grow-1 py-4">
+    <h2 class="text-center mb-4">購入（確認）</h2>
+
+    <div th:if="${errorMessage}" class="alert alert-danger" th:text="${errorMessage}"></div>
+
+    <table class="table table-bordered align-middle text-center">
+        <thead class="table-light">
+            <tr><th>商品名</th><th>価格</th><th>数量</th><th>小計</th></tr>
+        </thead>
+        <tbody>
+            <tr th:each="item : ${cart.items}">
+                <td th:text="${item.productName}"></td>
+                <td th:text="|${#numbers.formatInteger(item.price,1,'COMMA')}円|"></td>
+                <td th:text="${item.quantity}"></td>
+                <td th:text="|${#numbers.formatInteger(item.subtotal,1,'COMMA')}円|"></td>
+            </tr>
+        </tbody>
+    </table>
+
+    <div class="text-end fw-bold mb-3">
+        合計：<span th:text="|${#numbers.formatInteger(cart.totalAmount,1,'COMMA')}円|">0円</span>
+    </div>
+
+    <div class="mb-3">
+        <strong>配送先：</strong><span th:text="${shippingAddress}"></span>
+    </div>
+
+    <form th:action="@{/purchase/conform}" method="post">
+        <div class="mb-3 row">
+            <label class="col-sm-2 col-form-label"><strong>支払い方法</strong></label>
+            <div class="col-sm-4">
+                <select name="paymentMethodId" class="form-select">
+                    <option value="">選択してください</option>
+                    <option th:each="pm : ${paymentMethods}"
+                            th:value="${pm.id}" th:text="${pm.name}"></option>
+                </select>
+            </div>
+        </div>
+
+        <div class="d-flex justify-content-between mt-4">
+            <a th:href="@{/purchase/input}" class="btn btn-outline-secondary">戻る</a>
+            <button type="submit" class="btn btn-success">購入</button>
+        </div>
+    </form>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+</body>
+</html>

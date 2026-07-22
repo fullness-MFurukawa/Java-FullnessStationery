@@ -1,0 +1,106 @@
+<!DOCTYPE html>
+<html lang="ja" xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>アカウント登録(入力) | Fullness Stationery</title>
+    <link rel="stylesheet"
+          href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+</head>
+<body class="bg-light">
+
+<div th:replace="~{fragments/header :: header}"></div>
+
+<main class="container my-5">
+    <div class="row justify-content-center">
+        <div class="col-md-7">
+            <div class="card shadow-sm">
+                <div class="card-body p-4">
+                    <h1 class="h4 text-center mb-4">アカウント登録(入力)</h1>
+
+                    <div th:if="${errorMessage}" class="alert alert-danger"
+                         role="alert" th:text="${errorMessage}"></div>
+
+                    <form th:action="@{/account/confirm}"
+                          th:object="${customerRegisterForm}" method="post">
+
+                        <div class="mb-3">
+                            <label class="form-label">氏名 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" th:field="*{name}"
+                                   th:classappend="${#fields.hasErrors('name')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('name')}"
+                                 th:errors="*{name}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">氏名カナ <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" th:field="*{nameKana}"
+                                   th:classappend="${#fields.hasErrors('nameKana')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('nameKana')}"
+                                 th:errors="*{nameKana}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">住所1 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" th:field="*{address1}"
+                                   th:classappend="${#fields.hasErrors('address1')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('address1')}"
+                                 th:errors="*{address1}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">住所2</label>
+                            <input type="text" class="form-control" th:field="*{address2}"
+                                   th:classappend="${#fields.hasErrors('address2')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('address2')}"
+                                 th:errors="*{address2}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">電話番号 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" th:field="*{phoneNumber}"
+                                   placeholder="03-1234-5678"
+                                   th:classappend="${#fields.hasErrors('phoneNumber')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('phoneNumber')}"
+                                 th:errors="*{phoneNumber}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">メールアドレス <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" th:field="*{mailAddress}"
+                                   th:classappend="${#fields.hasErrors('mailAddress')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('mailAddress')}"
+                                 th:errors="*{mailAddress}"></div>
+                        </div>
+
+                        <div class="mb-3">
+                            <label class="form-label">アカウント名 <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" th:field="*{username}"
+                                   th:classappend="${#fields.hasErrors('username')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('username')}"
+                                 th:errors="*{username}"></div>
+                        </div>
+
+                        <div class="mb-4">
+                            <label class="form-label">パスワード <span class="text-danger">*</span></label>
+                            <input type="password" class="form-control" th:field="*{password}"
+                                   th:classappend="${#fields.hasErrors('password')} ? 'is-invalid'">
+                            <div class="invalid-feedback" th:if="${#fields.hasErrors('password')}"
+                                 th:errors="*{password}"></div>
+                        </div>
+
+                        <div class="d-flex justify-content-between">
+                            <a th:href="@{/}" class="btn btn-outline-secondary">キャンセル</a>
+                            <button type="submit" class="btn btn-primary">確認画面へ</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+        </div>
+    </div>
+</main>
+
+<div th:replace="~{fragments/footer :: footer}"></div>
+
+</body>
+</html>
