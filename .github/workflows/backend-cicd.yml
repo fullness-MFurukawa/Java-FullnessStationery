@@ -2,7 +2,7 @@ name: Backend CICD
 
 on:
   push:
-    branches: [ main ]          
+    branches: [ main ]
     paths:
       - 'backend-answer/**'
       - '.github/workflows/backend-cicd.yml'
@@ -13,14 +13,13 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-
     services:
       postgres:
         image: postgres:17
         env:
           POSTGRES_DB: fullness-ecx
-          POSTGRES_USER: postgres      
-          POSTGRES_PASSWORD: training  
+          POSTGRES_USER: postgres
+          POSTGRES_PASSWORD: training
         ports:
           - 5432:5432
         options: >-
@@ -28,28 +27,23 @@ jobs:
           --health-interval 10s
           --health-timeout 5s
           --health-retries 5
-
     steps:
       - name: チェックアウト
         uses: actions/checkout@v4
-
       - name: JDK 17 のセットアップ
         uses: actions/setup-java@v4
         with:
           distribution: temurin
           java-version: '17'
-
       - name: データベース初期化(スキーマ＋シード)
         env:
           PGPASSWORD: training
         run: |
           psql -h localhost -U postgres -d fullness-ecx -f backend-answer/src/main/resources/sql/create_tables.sql
           psql -h localhost -U postgres -d fullness-ecx -f backend-answer/src/main/resources/sql/insert_data.sql
-
       - name: gradlew に実行権限を付与
         working-directory: backend-answer
         run: chmod +x ./gradlew
-
       - name: ビルド＆テスト
         working-directory: backend-answer
         env:
@@ -58,45 +52,41 @@ jobs:
           DB_PASSWORD: training
         run: ./gradlew build
 
-    deploy:
-      needs: build          # build(テスト)が成功したときだけ実行
-      if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-      runs-on: ubuntu-latest
-      steps:
-        - name: チェックアウト
-          uses: actions/checkout@v4
-
-        - name: JDK 17 のセットアップ
-          uses: actions/setup-java@v4
-          with:
-            distribution: temurin
-            java-version: '17'
-
-        - name: 実行用JARをビルド
-          working-directory: backend-answer
-          run: |
-            chmod +x ./gradlew
-            ./gradlew clean bootJar
-
-        - name: JARをEC2へ転送
-          uses: appleboy/scp-action@v0.1.7
-          with:
-            host: ${{ secrets.EC2_HOST }}
-            username: ${{ secrets.EC2_USER }}
-            key: ${{ secrets.EC2_SSH_KEY }}
-            source: "backend-answer/build/libs/*-SNAPSHOT.jar"
-            target: "/tmp/"
-            strip_components: 3     # backend-answer/build/libs を剥がして /tmp 直下へ
-
-        - name: 配置してサービス再起動
-          uses: appleboy/ssh-action@v1.0.3
-          with:
-            host: ${{ secrets.EC2_HOST }}
-            username: ${{ secrets.EC2_USER }}
-            key: ${{ secrets.EC2_SSH_KEY }}
-            script: |
-              sudo mv /tmp/*-SNAPSHOT.jar /opt/fullness/backend.jar
-              sudo chown fullness:fullness /opt/fullness/backend.jar
-              sudo systemctl restart fullness-backend
-              sleep 5
-              sudo systemctl is-active fullness-backend
+  deploy:
+    needs: build
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    steps:
+      - name: チェックアウト
+        uses: actions/checkout@v4
+      - name: JDK 17 のセットアップ
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: '17'
+      - name: 実行用JARをビルド
+        working-directory: backend-answer
+        run: |
+          chmod +x ./gradlew
+          ./gradlew clean bootJar
+      - name: JARをEC2へ転送
+        uses: appleboy/scp-action@v0.1.7
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          source: "backend-answer/build/libs/*-SNAPSHOT.jar"
+          target: "/tmp/"
+          strip_components: 3
+      - name: 配置してサービス再起動
+        uses: appleboy/ssh-action@v1.0.3
+        with:
+          host: ${{ secrets.EC2_HOST }}
+          username: ${{ secrets.EC2_USER }}
+          key: ${{ secrets.EC2_SSH_KEY }}
+          script: |
+            sudo mv /tmp/*-SNAPSHOT.jar /opt/fullness/backend.jar
+            sudo chown fullness:fullness /opt/fullness/backend.jar
+            sudo systemctl restart fullness-backend
+            sleep 5
+            sudo systemctl is-active fullness-backend
